@@ -20,7 +20,7 @@ public class LoanRequest {
     }
 
     public String toString() {
-        return "RQ: {"
+        return "Request: {"
                 + this.type + ", $"
                 + this.getAmount()
                 + " for " + this.getMonths() + " months}";

@@ -1,8 +1,6 @@
 package com.tinkoff.edu.test;
 
-import com.tinkoff.edu.app.LoanCalcController;
-import com.tinkoff.edu.app.LoanRequest;
-import com.tinkoff.edu.app.LoanType;
+import com.tinkoff.edu.app.*;
 
 /**
  * Loan Calc Tests
@@ -12,6 +10,7 @@ public class LoanCalcTest {
         LoanCalcController calcController = new LoanCalcController();
         LoanRequest request = new LoanRequest(LoanType.PERSON, 10,1000);
         int requestId = calcController.createRequest(request);
-        System.out.println(request);
+        LoanResponse response = new LoanResponse(ResponseType.APPROVED,requestId,request);
+        System.out.println(response);
     }
 }
