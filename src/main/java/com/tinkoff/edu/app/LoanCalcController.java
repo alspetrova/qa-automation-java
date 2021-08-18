@@ -6,10 +6,11 @@ public class LoanCalcController {
     /**
      * TODO Validates and logs request
      */
-    public static int createRequest(LoanRequest request) {
+    public int createRequest(LoanRequest request) {
+        LoanCalcService calcService = new LoanCalcService();
         //param validation
         //log request
         log(request);
-        return LoanCalcService.createRequest(request);
+        return calcService.createRequest(request);
     }
 }
