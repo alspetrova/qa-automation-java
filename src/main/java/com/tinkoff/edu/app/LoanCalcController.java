@@ -6,7 +6,7 @@ public class LoanCalcController {
     /**
      * TODO Validates and logs request
      */
-    public int createRequest(LoanRequest request) {
+    public LoanResponse createRequest(LoanRequest request) {
         LoanCalcService calcService = new LoanCalcService();
         //param validation
         //log request

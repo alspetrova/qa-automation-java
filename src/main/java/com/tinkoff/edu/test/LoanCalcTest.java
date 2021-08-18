@@ -9,8 +9,7 @@ public class LoanCalcTest {
     public static void main(String[] args) {
         LoanCalcController calcController = new LoanCalcController();
         LoanRequest request = new LoanRequest(LoanType.PERSON, 10,1000);
-        int requestId = calcController.createRequest(request);
-        LoanResponse response = new LoanResponse(ResponseType.APPROVED,requestId,request);
+        LoanResponse response = calcController.createRequest(request);
         System.out.println(response);
     }
 }
