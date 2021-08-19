@@ -7,8 +7,8 @@ public class LoanResponse {
 
     public LoanResponse(ResponseType type, int requestId, LoanRequest request) {
         this.type = type;
-        this.requestId=requestId;
-        this.request=request;
+        this.requestId = requestId;
+        this.request = request;
     }
 
     public int getRequestId() {

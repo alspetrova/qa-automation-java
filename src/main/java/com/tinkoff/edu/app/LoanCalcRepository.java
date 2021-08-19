@@ -5,10 +5,10 @@ public class LoanCalcRepository {
 
     /**
      * TODO persist request
+     *
      * @return Request Id
      */
     public LoanResponse save(LoanRequest request) {
-       ++requestId;
-        return new LoanResponse(ResponseType.APPROVED,requestId,request);
+        return new LoanResponse(ResponseType.APPROVED, ++requestId, request);
     }
 }
