@@ -8,7 +8,8 @@ public class LoanCalcController {
     // public LoanCalcController(LoanCalcRepository repo) {
     //     this.loanCalcService = new IpNotFriendlyService(repo);
     // }
-    public LoanCalcController(LoanCalcServiceInterface loanCalcService, LoanCalcRepository repo) {
+    public LoanCalcController(LoanCalcServiceInterface loanCalcService) {
+        LoanCalcRepository repo=new StaticVariableLoanCalcRepository();
         this.loanCalcService = new IpNotFriendlyService(repo);
     }
 
