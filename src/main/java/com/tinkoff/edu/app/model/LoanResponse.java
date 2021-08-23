@@ -1,4 +1,6 @@
-package com.tinkoff.edu.app;
+package com.tinkoff.edu.app.model;
+
+import com.tinkoff.edu.app.enums.*;
 
 public class LoanResponse {
     private final ResponseType type;

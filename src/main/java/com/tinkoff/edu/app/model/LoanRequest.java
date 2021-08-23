@@ -1,4 +1,6 @@
-package com.tinkoff.edu.app;
+package com.tinkoff.edu.app.model;
+
+import com.tinkoff.edu.app.enums.*;
 
 public class LoanRequest {
     private final LoanType type;
@@ -13,6 +15,10 @@ public class LoanRequest {
 
     public int getMonths() {
         return months;
+    }
+
+    public LoanType getType() {
+        return type;
     }
 
     public int getAmount() {

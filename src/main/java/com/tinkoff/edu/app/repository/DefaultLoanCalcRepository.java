@@ -1,6 +1,9 @@
-package com.tinkoff.edu.app;
+package com.tinkoff.edu.app.repository;
 
-public class LoanCalcRepository {
+import com.tinkoff.edu.app.model.*;
+import com.tinkoff.edu.app.enums.*;
+
+public class DefaultLoanCalcRepository implements LoanCalcRepository {
     private static int requestId;
 
     /**
@@ -8,7 +11,9 @@ public class LoanCalcRepository {
      *
      * @return Request Id
      */
+    @Override
     public LoanResponse save(LoanRequest request) {
         return new LoanResponse(ResponseType.APPROVED, ++requestId, request);
     }
+
 }

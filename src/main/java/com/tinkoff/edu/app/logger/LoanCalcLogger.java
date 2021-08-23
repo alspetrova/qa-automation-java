@@ -1,4 +1,6 @@
-package com.tinkoff.edu.app;
+package com.tinkoff.edu.app.logger;
+
+import com.tinkoff.edu.app.model.*;
 
 public class LoanCalcLogger {
     public static void log(LoanRequest request) {
