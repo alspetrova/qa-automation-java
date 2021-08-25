@@ -4,7 +4,7 @@ import com.tinkoff.edu.app.model.*;
 import com.tinkoff.edu.app.enums.*;
 
 public class DefaultLoanCalcRepository implements LoanCalcRepository {
-    private static int requestId;
+    private int requestId;
 
     /**
      * TODO persist request
