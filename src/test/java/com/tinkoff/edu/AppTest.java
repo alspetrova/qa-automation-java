@@ -27,7 +27,7 @@ public class AppTest {
     }
 
     @Test
-    @DisplayName("Первый вызов")
+    @DisplayName("Проверка, что requestId равен 1 после первого создания запроса")
     public void shouldGetOneWhenFirstResponse() {
         //region When
         LoanResponse response = calcController.createRequest(request);
@@ -38,7 +38,7 @@ public class AppTest {
     }
 
     @Test
-    @DisplayName("Второй вызов")
+    @DisplayName("Проверка, что requestId увеличивается на 1 после каждого создания запроса")
     public void shouldGetIncrementedIdAnyCall() {
         int firstCall = calcController.createRequest(request).getRequestId();
         int secondCall = calcController.createRequest(request).getRequestId();
