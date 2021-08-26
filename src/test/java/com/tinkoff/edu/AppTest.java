@@ -1,16 +1,47 @@
 package com.tinkoff.edu;
 
-
+import com.tinkoff.edu.app.controller.LoanCalcController;
+import com.tinkoff.edu.app.enums.LoanType;
+import com.tinkoff.edu.app.model.LoanRequest;
+import com.tinkoff.edu.app.model.LoanResponse;
+import com.tinkoff.edu.app.repository.DefaultLoanCalcRepository;
+import com.tinkoff.edu.app.repository.LoanCalcRepository;
+import com.tinkoff.edu.app.service.LoanCalcService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Unit test for simple App.
- */
+
 public class AppTest {
+    private LoanCalcController calcController;
+    private LoanRequest request;
+
+    @BeforeEach
+    public void init() {
+        //region Given
+        calcController = new LoanCalcController(new LoanCalcService(new DefaultLoanCalcRepository()));
+        request = new LoanRequest(LoanType.PERSON, 10, 1000);
+        //endregion
+    }
+
     @Test
-    public void shouldAnswerWithTrue() {
-        assertTrue(true);
+    @DisplayName("Проверка, что requestId равен 1 после первого создания запроса")
+    public void shouldGetOneWhenFirstResponse() {
+        //region When
+        LoanResponse response = calcController.createRequest(request);
+        //endregion
+        //region Then
+        assertEquals(1, response.getRequestId());
+        //endregion
+    }
+
+    @Test
+    @DisplayName("Проверка, что requestId увеличивается на 1 после каждого создания запроса")
+    public void shouldGetIncrementedIdAnyCall() {
+        int firstCall = calcController.createRequest(request).getRequestId();
+        int secondCall = calcController.createRequest(request).getRequestId();
+        assertEquals(firstCall + 1, secondCall);
     }
 }
