@@ -166,7 +166,6 @@ public class AppTest {
         request = new LoanRequest(LoanType.PERSON, 12, 9_999,fio);
         LoanResponse response = calcController.createRequest(request);
         UUID requestId = response.getId();
-        ResponseType responseType=calcController.getStatus(requestId);
         assertEquals(response.getType(),
                 calcController.getStatus(requestId));
     }

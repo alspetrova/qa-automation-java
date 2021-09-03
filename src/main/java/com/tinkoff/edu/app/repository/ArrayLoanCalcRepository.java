@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class ArrayLoanCalcRepository implements LoanCalcRepository {
 
-    public LoanCalcRow[] arrayRepository = new LoanCalcRow[100];
-    private int position;
+    public static LoanCalcRow[] arrayRepository = new LoanCalcRow[100];
+    private static int position;
     private UUID requestId;
 
     @Override
