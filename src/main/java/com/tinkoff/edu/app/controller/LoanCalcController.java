@@ -3,6 +3,7 @@ package com.tinkoff.edu.app.controller;
 import static com.tinkoff.edu.app.logger.LoanCalcLogger.log;
 
 import com.tinkoff.edu.app.enums.ResponseType;
+import com.tinkoff.edu.app.exceptions.*;
 import com.tinkoff.edu.app.service.*;
 import com.tinkoff.edu.app.model.*;
 
@@ -21,12 +22,15 @@ public class LoanCalcController {
     }
 
 
-    public LoanResponse createRequest(LoanRequest request) {
-        if ((request == null)||(request.getMonths() <= 0)||(request.getAmount() <= 0)){
-            return new LoanResponse(ResponseType.ERROR,null, request);
+    public LoanResponse createRequest(LoanRequest request) throws FioLengthException {
+       //  log(request);*/
+        try {
+            return loanCalcService.createRequest(request);
+        } catch (FioLengthException message) {
+            throw new FioLengthException("Слишком короткое или слишком длинное ФИО");
+        } catch (Exception message) {
+            throw new IllegalArgumentException(message);
         }
-       //  log(request);
-       return loanCalcService.createRequest(request);
     }
 
 

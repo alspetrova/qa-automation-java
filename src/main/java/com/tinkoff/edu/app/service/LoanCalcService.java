@@ -1,6 +1,7 @@
 package com.tinkoff.edu.app.service;
 
 import com.tinkoff.edu.app.enums.*;
+import com.tinkoff.edu.app.exceptions.FioLengthException;
 import com.tinkoff.edu.app.model.*;
 import com.tinkoff.edu.app.repository.*;
 
@@ -22,14 +23,21 @@ public class LoanCalcService implements LoanCalcServiceInterface {
     }
 
     @Override
-    public LoanResponse createRequest(LoanRequest request) {
-        ResponseType responseType = this.calculateResponseType(request);
-        UUID requestId = this.repo.save(request,responseType);
-        return new LoanResponse(responseType,requestId,request);
+    public LoanResponse createRequest(LoanRequest request) throws FioLengthException{
+        if ((request == null)||(request.getMonths() <= 0)||(request.getAmount() <= 0)){
+            throw new IllegalArgumentException("Некорректные значения в request || months || amount");
+        }
 
+        if (request.getFio().length() < 10 || request.getFio().length() > 100) {
+            throw new FioLengthException("Слишком короткое или слишком длинное имя");
+        }
+
+    ResponseType responseType = this.calculateResponseType(request);
+    UUID requestId = this.repo.save(request, responseType);
+    return new LoanResponse(responseType, requestId, request);
     }
 
-    public ResponseType calculateResponseType(LoanRequest request){
+    public ResponseType calculateResponseType(LoanRequest request) {
         switch (request.getType()) {
             case PERSON:{
                 if (request.getAmount() <= 10000) {
@@ -42,7 +50,7 @@ public class LoanCalcService implements LoanCalcServiceInterface {
                     if (request.getMonths() > 12) {
                         return DECLINED;
                     } else {
-                        return DECLINED;
+                        return APPROVED;
                     }
                 }
             }
