@@ -17,20 +17,22 @@ public class LoanCalcController {
      *
      * @param loanCalcService
      */
-    public LoanCalcController(LoanCalcServiceInterface loanCalcService) {
+    public LoanCalcController(LoanCalcServiceInterface loanCalcService){
         this.loanCalcService = loanCalcService;
     }
 
 
-    public LoanResponse createRequest(LoanRequest request) throws FioLengthException {
+    public LoanResponse createRequest(LoanRequest request){
        //  log(request);*/
+        LoanResponse loanResponse= null;
         try {
-            return loanCalcService.createRequest(request);
-        } catch (FioLengthException message) {
-            throw new FioLengthException("Слишком короткое или слишком длинное ФИО");
-        } catch (Exception message) {
-            throw new IllegalArgumentException(message);
+            loanResponse = loanCalcService.createRequest(request);
+        } catch (FioLengthException ex) {
+            System.out.println(ex.getStackTrace());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getStackTrace());
         }
+        return loanResponse;
     }
 
 

@@ -24,6 +24,7 @@ public class LoanCalcService implements LoanCalcServiceInterface {
 
     @Override
     public LoanResponse createRequest(LoanRequest request) throws FioLengthException{
+
         if ((request == null)||(request.getMonths() <= 0)||(request.getAmount() <= 0)){
             throw new IllegalArgumentException("Некорректные значения в request || months || amount");
         }
@@ -84,9 +85,13 @@ public class LoanCalcService implements LoanCalcServiceInterface {
     @Override
     public ResponseType updateStatus(UUID requestId, ResponseType response) {
         LoanCalcRow row = repo.getRowById(requestId);
-        if (row==null)
+      /*  if (row==null)
+            return ResponseType.ERROR;*/
+        try {
+            row.setStatus(response);
+            return row.getStatus();
+        } catch (IllegalArgumentException e){
             return ResponseType.ERROR;
-        row.setStatus(response);
-        return row.getStatus();
+        }
     }
 }
