@@ -1,5 +1,6 @@
 package com.tinkoff.edu.app.repository;
 
+import com.tinkoff.edu.app.exceptions.*;
 import com.tinkoff.edu.app.model.*;
 import com.tinkoff.edu.app.enums.*;
 
@@ -19,12 +20,12 @@ public class ArrayLoanCalcRepository implements LoanCalcRepository {
         return requestId;
     }
 
-    public LoanCalcRow getRowById(UUID requestId) {
+    public LoanCalcRow getRowById(UUID requestId){
         for (int i = 0; i < position; i++) {
             if ( arrayRepository[i].getRequestId().equals(requestId)) {
                 return arrayRepository[i];
             }
         }
-        return null;
+        throw new IllegalArgumentException("Нет заявки с таким Id");
     }
 }

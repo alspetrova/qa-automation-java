@@ -3,6 +3,7 @@ package com.tinkoff.edu.app.controller;
 import static com.tinkoff.edu.app.logger.LoanCalcLogger.log;
 
 import com.tinkoff.edu.app.enums.ResponseType;
+import com.tinkoff.edu.app.exceptions.*;
 import com.tinkoff.edu.app.service.*;
 import com.tinkoff.edu.app.model.*;
 
@@ -16,17 +17,22 @@ public class LoanCalcController {
      *
      * @param loanCalcService
      */
-    public LoanCalcController(LoanCalcServiceInterface loanCalcService) {
+    public LoanCalcController(LoanCalcServiceInterface loanCalcService){
         this.loanCalcService = loanCalcService;
     }
 
 
-    public LoanResponse createRequest(LoanRequest request) {
-        if ((request == null)||(request.getMonths() <= 0)||(request.getAmount() <= 0)){
-            return new LoanResponse(ResponseType.ERROR,null, request);
+    public LoanResponse createRequest(LoanRequest request){
+       //  log(request);*/
+        LoanResponse loanResponse= null;
+        try {
+            loanResponse = loanCalcService.createRequest(request);
+        } catch (FioLengthException ex) {
+            System.out.println(ex.getStackTrace());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getStackTrace());
         }
-       //  log(request);
-       return loanCalcService.createRequest(request);
+        return loanResponse;
     }
 
 
