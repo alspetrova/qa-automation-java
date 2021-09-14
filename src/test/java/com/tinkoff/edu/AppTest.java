@@ -5,15 +5,17 @@ import com.tinkoff.edu.app.enums.LoanType;
 import com.tinkoff.edu.app.enums.ResponseType;
 import com.tinkoff.edu.app.model.LoanRequest;
 import com.tinkoff.edu.app.model.LoanResponse;
-import com.tinkoff.edu.app.repository.ArrayLoanCalcRepository;
+import com.tinkoff.edu.app.repository.MapLoanCalcRepository;
 import com.tinkoff.edu.app.service.LoanCalcService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.tinkoff.edu.app.exceptions.*;
 
+import java.util.List;
 import java.util.UUID;
 
+import static com.tinkoff.edu.app.enums.LoanType.OOO;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppTest {
@@ -25,8 +27,7 @@ public class AppTest {
     @BeforeEach
     public void init() {
         //region Given
-      //  calcController = new LoanCalcController(new LoanCalcService(new DefaultLoanCalcRepository()));
-        calcController = new LoanCalcController(new LoanCalcService(new ArrayLoanCalcRepository()));
+        calcController = new LoanCalcController(new LoanCalcService(new MapLoanCalcRepository()));
         request = new LoanRequest(LoanType.PERSON, 10, 1000,fio);
         //endregion
 
@@ -50,7 +51,7 @@ public class AppTest {
     @Test
     @DisplayName("3: Ошибка, если запрос null")
     public void shouldGetExceptionWhenApplyNullRequest(){
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(null));
    }
@@ -59,7 +60,7 @@ public class AppTest {
     @DisplayName("4: Ошибка, если сумма = 0")
     public void shouldGetExceptionWhenApplyZeroAmountRequest(){
         request = new LoanRequest(LoanType.PERSON, 10, 0, fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -68,7 +69,7 @@ public class AppTest {
     @DisplayName("5: Ошибка, если сумма отрицательная")
     public void shouldGetErrorWhenApplyNegativeAmountRequest(){
         request = new LoanRequest(LoanType.PERSON, 10, -10_000,fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -76,8 +77,8 @@ public class AppTest {
     @Test
     @DisplayName("6: Ошибка, если количество месяцев = 0")
     public void shouldGetErrorWhenApplyZeroMonthsRequest(){
-        request = new LoanRequest(LoanType.OOO, 0, 12,fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        request = new LoanRequest(OOO, 0, 12,fio);
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -85,8 +86,8 @@ public class AppTest {
     @Test
     @DisplayName("7: Ошибка, если количество месяцев отрицательное число")
     public void shouldGetErrorWhenApplyNegativeMonthsRequest(){
-        request = new LoanRequest(LoanType.OOO, -1, 12,fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        request = new LoanRequest(OOO, -1, 12,fio);
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -120,7 +121,7 @@ public class AppTest {
     @Test
     @DisplayName("11: Declined for OOO, amount<=10_000, any months")
     public void shouldGetDeclineWhenOOOLess10000(){
-        request = new LoanRequest(LoanType.OOO, 1, 10_000,fio);
+        request = new LoanRequest(OOO, 1, 10_000,fio);
         LoanResponse response = calcController.createRequest(request);
         assertEquals(ResponseType.DECLINED, response.getType());
     }
@@ -128,7 +129,7 @@ public class AppTest {
     @Test
     @DisplayName("12: Approved for OOO, amount>10_000, months<12")
     public void shouldGetApproveWhenOOOMore10000Less12(){
-        request = new LoanRequest(LoanType.OOO, 11, 10_001,fio);
+        request = new LoanRequest(OOO, 11, 10_001,fio);
         LoanResponse response = calcController.createRequest(request);
         assertEquals(ResponseType.APPROVED, response.getType());
     }
@@ -136,7 +137,7 @@ public class AppTest {
     @Test
     @DisplayName("13: Declined for OOO, amount>10_000, months>=12")
     public void shouldGetDeclineWhenOOOMore10000More12(){
-        request = new LoanRequest(LoanType.OOO, 12, 10_001,fio);
+        request = new LoanRequest(OOO, 12, 10_001,fio);
         LoanResponse response = calcController.createRequest(request);
         assertEquals(ResponseType.DECLINED, response.getType());
     }
@@ -188,7 +189,7 @@ public class AppTest {
     @DisplayName("19: Ошибка при получении статуса по несуществующему Id")
     public void shouldGetExceptionWhenIdNotExist(){
         UUID requestId = UUID.randomUUID();
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(GetResponseException.class,
                 () -> calcController.getStatus(requestId));
     }
 
@@ -196,7 +197,7 @@ public class AppTest {
     @DisplayName("20: Ошибка попытке обновить статус по несуществующему Id")
     public void shouldGetExceptionWhenUpdateStatusWhenBIdNotExist(){
         UUID requestId = UUID.randomUUID();
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(GetResponseException.class,
                 () -> calcController.updateStatus(requestId,ResponseType.APPROVED));
     }
 
@@ -204,7 +205,7 @@ public class AppTest {
     @DisplayName ("21: Эспешен, если fio длинное")
     public void shouldGetExceptionWhenFioLong(){
         request = new LoanRequest(LoanType.PERSON, 12, 9_999,"Очень длинное фио более 100 символов Очень длинное фио более 100 символов Очень длинное фио более 100");
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(FioLengthException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -213,9 +214,18 @@ public class AppTest {
     @DisplayName ("22: Эспешен,если fio короткое")
     public void shouldGetExceptionWhenFioShort(){
         request = new LoanRequest(LoanType.PERSON, 12, 9_999,"Ф и о");
-        LoanCalcService loanCalcService = new LoanCalcService(new ArrayLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
         assertThrows(FioLengthException.class,
                 () -> loanCalcService.createRequest(request));
     }
 
+    @Test
+    @DisplayName("23. Поиск ООО ")
+    public void shouldFindOOO() {
+        request = new LoanRequest(OOO, 11, 10_001, fio);
+        calcController.createRequest(request);
+        List<LoanResponse> responseList = calcController.getApplicationsByLoanType(OOO);
+        assertTrue(responseList.size() > 0);
+        responseList.forEach(response -> assertEquals(response.getRequest().getType(), OOO));
+    }
 }
