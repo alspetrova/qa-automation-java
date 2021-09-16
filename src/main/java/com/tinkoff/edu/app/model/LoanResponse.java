@@ -5,27 +5,27 @@ import com.tinkoff.edu.app.enums.*;
 import java.util.UUID;
 
 public class LoanResponse {
-    public void setType(ResponseType type) {
-        this.type = type;
-    }
 
     private ResponseType type;
-
-    public void setRequestId(UUID requestId) {
-        this.requestId = requestId;
-    }
-
     private UUID requestId;
     private final LoanRequest request;
-
-    public ResponseType getType() {
-        return type;
-    }
 
     public LoanResponse(ResponseType type, UUID requestId, LoanRequest request) {
         this.type = type;
         this.requestId = requestId;
         this.request = request;
+    }
+
+    public void setType(ResponseType type) {
+        this.type = type;
+    }
+
+    public void setRequestId(UUID requestId) {
+        this.requestId = requestId;
+    }
+
+    public ResponseType getType() {
+        return type;
     }
 
     public UUID getId() {

@@ -1,10 +1,8 @@
 package com.tinkoff.edu.app.repository;
 
-import com.tinkoff.edu.app.enums.LoanType;
 import com.tinkoff.edu.app.enums.ResponseType;
 import com.tinkoff.edu.app.model.*;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.Map;
 

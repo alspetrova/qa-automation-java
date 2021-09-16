@@ -7,31 +7,27 @@ import com.tinkoff.edu.app.model.LoanResponse;
 
 import java.util.UUID;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MapLoanCalcRepository implements LoanCalcRepository {
 
-    private final Map<UUID, LoanResponse> mapRepository = new HashMap<>();
-
-  /*  public static LoanCalcRow[] arrayRepository = new LoanCalcRow[100];
-    private static int position;
-    private UUID requestId;*/
+    public static Map<UUID, LoanResponse> mapRepository = new HashMap<>();
 
     @Override
-    public UUID save(LoanRequest request,ResponseType responseType) {
+    public UUID save(LoanRequest request, ResponseType responseType) {
         UUID requestId = UUID.randomUUID();
-        LoanResponse response = new LoanResponse(responseType,requestId,request);
+        LoanResponse response = new LoanResponse(responseType, requestId, request);
         response.setRequestId(requestId);
         this.mapRepository.put(requestId,
                 response);
         return requestId;
     }
+
     @Override
     public LoanResponse getItemById(UUID requestId) {
         return this.mapRepository.get(requestId);
     }
 
-  @Override
+    @Override
     public Map<UUID, LoanResponse> getApplications() {
         return Collections.unmodifiableMap(mapRepository);
     }
