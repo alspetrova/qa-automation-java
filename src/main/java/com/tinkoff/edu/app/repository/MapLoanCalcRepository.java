@@ -10,21 +10,21 @@ import java.util.*;
 
 public class MapLoanCalcRepository implements LoanCalcRepository {
 
-    public static Map<UUID, LoanResponse> mapRepository = new HashMap<>();
+    private Map<UUID, LoanResponse> mapRepository = new HashMap<>();
 
     @Override
     public UUID save(LoanRequest request, ResponseType responseType) {
         UUID requestId = UUID.randomUUID();
         LoanResponse response = new LoanResponse(responseType, requestId, request);
         response.setRequestId(requestId);
-        this.mapRepository.put(requestId,
+        mapRepository.put(requestId,
                 response);
         return requestId;
     }
 
     @Override
     public LoanResponse getItemById(UUID requestId) {
-        return this.mapRepository.get(requestId);
+        return mapRepository.get(requestId);
     }
 
     @Override
