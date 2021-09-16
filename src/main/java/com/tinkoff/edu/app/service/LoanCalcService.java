@@ -2,10 +2,14 @@ package com.tinkoff.edu.app.service;
 
 import com.tinkoff.edu.app.enums.*;
 import com.tinkoff.edu.app.exceptions.FioLengthException;
+import com.tinkoff.edu.app.exceptions.GetResponseException;
 import com.tinkoff.edu.app.model.*;
 import com.tinkoff.edu.app.repository.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.tinkoff.edu.app.enums.ResponseType.APPROVED;
 import static com.tinkoff.edu.app.enums.ResponseType.DECLINED;
@@ -23,9 +27,9 @@ public class LoanCalcService implements LoanCalcServiceInterface {
     }
 
     @Override
-    public LoanResponse createRequest(LoanRequest request) throws FioLengthException{
+    public LoanResponse createRequest(LoanRequest request) throws FioLengthException {
 
-        if ((request == null)||(request.getMonths() <= 0)||(request.getAmount() <= 0)){
+        if ((request == null) || (request.getMonths() <= 0) || (request.getAmount() <= 0)) {
             throw new IllegalArgumentException("Некорректные значения в request || months || amount");
         }
 
@@ -33,14 +37,14 @@ public class LoanCalcService implements LoanCalcServiceInterface {
             throw new FioLengthException("Слишком короткое или слишком длинное имя");
         }
 
-    ResponseType responseType = this.calculateResponseType(request);
-    UUID requestId = this.repo.save(request, responseType);
-    return new LoanResponse(responseType, requestId, request);
+        ResponseType responseType = this.calculateResponseType(request);
+        UUID requestId = this.repo.save(request,responseType);
+        return new LoanResponse(responseType, requestId, request);
     }
 
     public ResponseType calculateResponseType(LoanRequest request) {
         switch (request.getType()) {
-            case PERSON:{
+            case PERSON: {
                 if (request.getAmount() <= 10000) {
                     if (request.getMonths() <= 12) {
                         return APPROVED;
@@ -76,22 +80,29 @@ public class LoanCalcService implements LoanCalcServiceInterface {
 
     @Override
     public ResponseType getStatus(UUID requestId) {
-        LoanCalcRow row = repo.getRowById(requestId);
-        if (row==null)
-                return ResponseType.ERROR;
-        return row.getStatus();
+        try {
+            return repo.getItemById(requestId).getType();
+        } catch (NullPointerException e) {
+            throw new GetResponseException("No application for this ID", e);
+        }
     }
 
     @Override
-    public ResponseType updateStatus(UUID requestId, ResponseType response) {
-        LoanCalcRow row = repo.getRowById(requestId);
-      /*  if (row==null)
-            return ResponseType.ERROR;*/
+    public ResponseType updateStatus(UUID requestId, ResponseType response_param) {
+        LoanResponse response = repo.getItemById(requestId);
         try {
-            row.setStatus(response);
-            return row.getStatus();
-        } catch (IllegalArgumentException e){
-            return ResponseType.ERROR;
+            response.setType(response_param);
+        } catch (NullPointerException e) {
+            throw new GetResponseException("No application for this ID", e);
         }
+        return response.getType();
+    }
+
+    @Override
+    public List<LoanResponse> getApplicationsByLoanType(LoanType requester) {
+        Map<UUID, LoanResponse> applications = repo.getApplications();
+        return applications.values().stream()
+                .filter((application) -> application.getRequest().getType().equals(requester))
+                .collect(Collectors.toList());
     }
 }
