@@ -11,11 +11,14 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
+import static com.tinkoff.edu.app.model.LoanResponse.fromString;
 import static java.nio.file.StandardOpenOption.*;
 
 public class FileLoanCalcRepo implements LoanCalcRepository {
 
     public Path path;
+
     public FileLoanCalcRepo(Path path) {
         this.path = path;
     }
@@ -23,16 +26,15 @@ public class FileLoanCalcRepo implements LoanCalcRepository {
     public UUID save(LoanRequest request, ResponseType responseType) {
         UUID requestId = UUID.randomUUID();
         LoanResponse response = new LoanResponse(request.getType(), request.getAmount(),
-                request.getMonths(),request.getFio(), requestId, responseType);
+                request.getMonths(), request.getFio(), requestId, responseType);
         response.setRequestId(requestId);
 
-        String loanRequestString =request.getType() + ", " +
+        String loanRequestString = request.getType() + ", " +
                 request.getAmount() + ", " + request.getMonths() + ", " +
-                request.getFio() + ", " + response.getId()+ ", " +
+                request.getFio() + ", " + response.getId() + ", " +
                 response.getType();
-        try
-        {
-            Files.writeString(path,loanRequestString+ "\n", APPEND,CREATE,WRITE);
+        try {
+            Files.writeString(path, loanRequestString + "\n", APPEND, CREATE, WRITE);
         } catch (IOException e) {
             throw new RuntimeException("Не удалось сохранить строку в файл", e);
         }
@@ -54,7 +56,7 @@ public class FileLoanCalcRepo implements LoanCalcRepository {
         try {
             var lines = Files.readAllLines(path);
             for (var l = 0; l < lines.size(); l++) {
-                var application = LoanResponse.fromString(lines.get(l));
+                var application = fromString(lines.get(l));
                 applicationsMap.put(application.getId(), application);
             }
         } catch (IOException e) {

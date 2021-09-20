@@ -4,16 +4,14 @@ import com.tinkoff.edu.app.enums.*;
 
 import java.util.UUID;
 
-public class LoanResponse{
+public class LoanResponse {
 
     private ResponseType responseType;
     private UUID requestId;
-    //private final LoanRequest request;
     private final LoanType requestType;
     private final int requestAmount;
     private final int requestMonths;
     private final String requestFio;
-
 
 
     public LoanResponse(LoanType requestType, int requestAmount, int requestMonths, String requestFio,
@@ -42,19 +40,14 @@ public class LoanResponse{
         return requestId;
     }
 
-   /* public LoanRequest getRequest() {
-        return request;
-    }*/
-
-    public String toString() {
+   /* public String toString() {
         return "Response: {"
                 + this.responseType + ", "
                 + this.requestId + ", "
                 + ", for "
-              //  + this.getRequest()
+                //  + this.getRequest()
                 + "}";
-    }
-
+    }*/
 
 
     public static LoanResponse fromString(String str) {
@@ -68,7 +61,7 @@ public class LoanResponse{
         var responseType = ResponseType.valueOf(arr[5]);
 
 
-        return new LoanResponse(requestType,amount,months,fio,requestId,responseType);
+        return new LoanResponse(requestType, amount, months, fio, requestId, responseType);
     }
 
     public LoanType getRequestType() {

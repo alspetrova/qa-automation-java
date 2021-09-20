@@ -37,9 +37,9 @@ public class LoanCalcService implements LoanCalcServiceInterface {
         }
 
         ResponseType responseType = this.calculateResponseType(request);
-        UUID requestId = this.repo.save(request,responseType);
-        return new LoanResponse(request.getType(),request.getAmount(), request.getMonths(),
-                request.getFio(),requestId, responseType);
+        UUID requestId = this.repo.save(request, responseType);
+        return new LoanResponse(request.getType(), request.getAmount(), request.getMonths(),
+                request.getFio(), requestId, responseType);
     }
 
     public ResponseType calculateResponseType(LoanRequest request) {

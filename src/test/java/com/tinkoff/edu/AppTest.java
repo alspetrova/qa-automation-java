@@ -238,7 +238,7 @@ public class AppTest {
         loanCalcService.createRequest(requestPerson);
 
         List<LoanResponse> responseList = loanCalcService.getApplicationsByLoanType(OOO);
-        assertTrue(responseList.size() ==1);
+        assertTrue(responseList.size() == 1);
         responseList.forEach(response -> assertEquals(response.getRequestType(), OOO));
     }
 

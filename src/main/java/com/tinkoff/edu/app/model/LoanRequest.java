@@ -8,7 +8,7 @@ public class LoanRequest {
     private final int amount;
     private final String fio;
 
-    public LoanRequest(LoanType type, int months, int amount,String fio) {
+    public LoanRequest(LoanType type, int months, int amount, String fio) {
         this.type = type;
         this.months = months;
         this.amount = amount;
