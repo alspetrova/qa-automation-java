@@ -4,20 +4,30 @@ import com.tinkoff.edu.app.enums.*;
 
 import java.util.UUID;
 
-public class LoanResponse {
+public class LoanResponse{
 
-    private ResponseType type;
+    private ResponseType responseType;
     private UUID requestId;
-    private final LoanRequest request;
+    //private final LoanRequest request;
+    private final LoanType requestType;
+    private final int requestAmount;
+    private final int requestMonths;
+    private final String requestFio;
 
-    public LoanResponse(ResponseType type, UUID requestId, LoanRequest request) {
-        this.type = type;
+
+
+    public LoanResponse(LoanType requestType, int requestAmount, int requestMonths, String requestFio,
+                        UUID requestId, ResponseType responseType) {
+        this.requestType = requestType;
+        this.requestAmount = requestAmount;
+        this.requestMonths = requestMonths;
+        this.requestFio = requestFio;
         this.requestId = requestId;
-        this.request = request;
+        this.responseType = responseType;
     }
 
     public void setType(ResponseType type) {
-        this.type = type;
+        this.responseType = type;
     }
 
     public void setRequestId(UUID requestId) {
@@ -25,23 +35,43 @@ public class LoanResponse {
     }
 
     public ResponseType getType() {
-        return type;
+        return responseType;
     }
 
     public UUID getId() {
         return requestId;
     }
 
-    public LoanRequest getRequest() {
+   /* public LoanRequest getRequest() {
         return request;
-    }
+    }*/
 
     public String toString() {
         return "Response: {"
-                + this.type + ", "
+                + this.responseType + ", "
                 + this.requestId + ", "
                 + ", for "
-                + this.getRequest()
+              //  + this.getRequest()
                 + "}";
+    }
+
+
+
+    public static LoanResponse fromString(String str) {
+        var arr = str.split(", ");
+
+        var requestType = LoanType.valueOf(arr[0]);
+        var amount = Integer.parseInt(arr[1]);
+        var months = Integer.parseInt(arr[2]);
+        var fio = arr[3];
+        var requestId = UUID.fromString(arr[4]);
+        var responseType = ResponseType.valueOf(arr[5]);
+
+
+        return new LoanResponse(requestType,amount,months,fio,requestId,responseType);
+    }
+
+    public LoanType getRequestType() {
+        return requestType;
     }
 }

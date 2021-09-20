@@ -2,7 +2,6 @@ package com.tinkoff.edu.app.service;
 
 import com.tinkoff.edu.app.enums.*;
 import com.tinkoff.edu.app.exceptions.FioLengthException;
-import com.tinkoff.edu.app.exceptions.GetResponseException;
 import com.tinkoff.edu.app.model.*;
 import com.tinkoff.edu.app.repository.*;
 
@@ -39,7 +38,8 @@ public class LoanCalcService implements LoanCalcServiceInterface {
 
         ResponseType responseType = this.calculateResponseType(request);
         UUID requestId = this.repo.save(request,responseType);
-        return new LoanResponse(responseType, requestId, request);
+        return new LoanResponse(request.getType(),request.getAmount(), request.getMonths(),
+                request.getFio(),requestId, responseType);
     }
 
     public ResponseType calculateResponseType(LoanRequest request) {
@@ -83,7 +83,7 @@ public class LoanCalcService implements LoanCalcServiceInterface {
         try {
             return repo.getItemById(requestId).getType();
         } catch (NullPointerException e) {
-            throw new GetResponseException("No application for this ID", e);
+            throw new RuntimeException("No application for this ID", e);
         }
     }
 
@@ -93,7 +93,7 @@ public class LoanCalcService implements LoanCalcServiceInterface {
         try {
             response.setType(response_param);
         } catch (NullPointerException e) {
-            throw new GetResponseException("No application for this ID", e);
+            throw new RuntimeException("No application for this ID", e);
         }
         return response.getType();
     }
@@ -102,7 +102,7 @@ public class LoanCalcService implements LoanCalcServiceInterface {
     public List<LoanResponse> getApplicationsByLoanType(LoanType requester) {
         Map<UUID, LoanResponse> applications = repo.getApplications();
         return applications.values().stream()
-                .filter((application) -> application.getRequest().getType().equals(requester))
+                .filter((application) -> application.getRequestType().equals(requester))
                 .collect(Collectors.toList());
     }
 }
