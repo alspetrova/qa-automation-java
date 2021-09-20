@@ -40,16 +40,6 @@ public class LoanResponse {
         return requestId;
     }
 
-   /* public String toString() {
-        return "Response: {"
-                + this.responseType + ", "
-                + this.requestId + ", "
-                + ", for "
-                //  + this.getRequest()
-                + "}";
-    }*/
-
-
     public static LoanResponse fromString(String str) {
         var arr = str.split(", ");
 
