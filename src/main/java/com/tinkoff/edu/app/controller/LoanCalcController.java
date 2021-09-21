@@ -19,14 +19,14 @@ public class LoanCalcController {
      *
      * @param loanCalcService
      */
-    public LoanCalcController(LoanCalcServiceInterface loanCalcService){
+    public LoanCalcController(LoanCalcServiceInterface loanCalcService) {
         this.loanCalcService = loanCalcService;
     }
 
 
-    public LoanResponse createRequest(LoanRequest request){
-       //  log(request);*/
-        LoanResponse loanResponse= null;
+    public LoanResponse createRequest(LoanRequest request) {
+        //  log(request);*/
+        LoanResponse loanResponse = null;
         try {
             loanResponse = loanCalcService.createRequest(request);
         } catch (FioLengthException ex) {
@@ -39,7 +39,7 @@ public class LoanCalcController {
 
 
     public ResponseType getStatus(UUID requestId) {
-         return loanCalcService.getStatus(requestId);
+        return loanCalcService.getStatus(requestId);
     }
 
 

@@ -1,17 +1,18 @@
 package com.tinkoff.edu;
 
 import com.tinkoff.edu.app.controller.LoanCalcController;
-import com.tinkoff.edu.app.enums.LoanType;
 import com.tinkoff.edu.app.enums.ResponseType;
 import com.tinkoff.edu.app.model.LoanRequest;
 import com.tinkoff.edu.app.model.LoanResponse;
-import com.tinkoff.edu.app.repository.MapLoanCalcRepository;
+import com.tinkoff.edu.app.repository.FileLoanCalcRepo;
 import com.tinkoff.edu.app.service.LoanCalcService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.tinkoff.edu.app.exceptions.*;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,12 +23,15 @@ public class AppTest {
     private LoanCalcController calcController;
     private LoanRequest request;
     private String fio = "Петрова Александра Сергеевна";
-
+    private FileLoanCalcRepo fileRepository;
+    private Path path = Path.of("testfile.txt");
+    private Path pathООО = Path.of("testfileOOO.txt");
 
     @BeforeEach
     public void init() {
         //region Given
-        calcController = new LoanCalcController(new LoanCalcService(new MapLoanCalcRepository()));
+        fileRepository = new FileLoanCalcRepo(path);
+        calcController = new LoanCalcController(new LoanCalcService(fileRepository));
         request = new LoanRequest(PERSON, 10, 1000, fio);
         //endregion
 
@@ -51,7 +55,7 @@ public class AppTest {
     @Test
     @DisplayName("3: Ошибка, если запрос null")
     public void shouldGetExceptionWhenApplyNullRequest() {
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(null));
     }
@@ -60,7 +64,7 @@ public class AppTest {
     @DisplayName("4: Ошибка, если сумма = 0")
     public void shouldGetExceptionWhenApplyZeroAmountRequest() {
         request = new LoanRequest(PERSON, 10, 0, fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -69,7 +73,7 @@ public class AppTest {
     @DisplayName("5: Ошибка, если сумма отрицательная")
     public void shouldGetErrorWhenApplyNegativeAmountRequest() {
         request = new LoanRequest(PERSON, 10, -10_000, fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -78,7 +82,7 @@ public class AppTest {
     @DisplayName("6: Ошибка, если количество месяцев = 0")
     public void shouldGetErrorWhenApplyZeroMonthsRequest() {
         request = new LoanRequest(OOO, 0, 12, fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -87,7 +91,7 @@ public class AppTest {
     @DisplayName("7: Ошибка, если количество месяцев отрицательное число")
     public void shouldGetErrorWhenApplyNegativeMonthsRequest() {
         request = new LoanRequest(OOO, -1, 12, fio);
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(IllegalArgumentException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -189,7 +193,7 @@ public class AppTest {
     @DisplayName("19: Ошибка при получении статуса по несуществующему Id")
     public void shouldGetExceptionWhenIdNotExist() {
         UUID requestId = UUID.randomUUID();
-        assertThrows(GetResponseException.class,
+        assertThrows(RuntimeException.class,
                 () -> calcController.getStatus(requestId));
     }
 
@@ -197,7 +201,7 @@ public class AppTest {
     @DisplayName("20: Ошибка попытке обновить статус по несуществующему Id")
     public void shouldGetExceptionWhenUpdateStatusWhenBIdNotExist() {
         UUID requestId = UUID.randomUUID();
-        assertThrows(GetResponseException.class,
+        assertThrows(RuntimeException.class,
                 () -> calcController.updateStatus(requestId, ResponseType.APPROVED));
     }
 
@@ -205,7 +209,7 @@ public class AppTest {
     @DisplayName("21: Эспешен, если fio длинное")
     public void shouldGetExceptionWhenFioLong() {
         request = new LoanRequest(PERSON, 12, 9_999, "Очень длинное фио более 100 символов Очень длинное фио более 100 символов Очень длинное фио более 100");
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(FioLengthException.class,
                 () -> loanCalcService.createRequest(request));
     }
@@ -214,22 +218,28 @@ public class AppTest {
     @DisplayName("22: Эспешен,если fio короткое")
     public void shouldGetExceptionWhenFioShort() {
         request = new LoanRequest(PERSON, 12, 9_999, "Ф и о");
-        LoanCalcService loanCalcService = new LoanCalcService(new MapLoanCalcRepository());
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(path));
         assertThrows(FioLengthException.class,
                 () -> loanCalcService.createRequest(request));
     }
 
     @Test
     @DisplayName("23. Поиск ООО ")
-    public void shouldFindOOO() {
-        LoanRequest requestOOO = new LoanRequest(OOO, 11, 10_001, fio);
-        calcController.createRequest(requestOOO);
+    public void shouldFindOOO() throws FioLengthException {
+        fileRepository.clearFile();
+
+        LoanCalcService loanCalcService = new LoanCalcService(new FileLoanCalcRepo(pathООО));
+
+        LoanRequest requestООО = new LoanRequest(OOO, 11, 10_001, fio);
+        loanCalcService.createRequest(requestООО);
         LoanRequest requestIP = new LoanRequest(IP, 11, 10_001, fio);
-        calcController.createRequest(requestIP);
+        loanCalcService.createRequest(requestIP);
         LoanRequest requestPerson = new LoanRequest(PERSON, 11, 10_001, fio);
-        calcController.createRequest(requestPerson);
-        List<LoanResponse> responseList = calcController.getApplicationsByLoanType(OOO);
+        loanCalcService.createRequest(requestPerson);
+
+        List<LoanResponse> responseList = loanCalcService.getApplicationsByLoanType(OOO);
         assertTrue(responseList.size() == 1);
-        responseList.forEach(response -> assertEquals(response.getRequest().getType(), OOO));
+        responseList.forEach(response -> assertEquals(response.getRequestType(), OOO));
     }
+
 }
